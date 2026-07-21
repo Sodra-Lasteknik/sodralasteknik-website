@@ -1,0 +1,122 @@
+/* ==========================================================================
+   Design tokens - Södra Låsteknik
+   Grön / grå / svart. Ren, teknisk säkerhetskänsla. Ett tema (inget
+   prefers-color-scheme). Prefix --sl-. Värdena samplade ur logotypen:
+   grön #387838, grå #808080.
+   ========================================================================== */
+
+:root {
+  /* ===== Grön ramp (mörk → ljus) ===== */
+  --sl-forest-900: #13251a;   /* nära svart-grön – mörka sektioner, footer */
+  --sl-forest-800: #1b3324;
+  --sl-forest-700: #24492f;   /* ikoner, primärtext på ljust */
+  --sl-forest-600: #2c5e35;
+  --sl-green-500:  #3f8b46;
+  --sl-green-400:  #58a25f;
+  --sl-green-100:  #e7f0e7;   /* tints, chip-bakgrund */
+
+  /* Märkesaccent (grön från loggan) – knappar, eyebrows, siffror, linjer */
+  --sl-brand:      #387838;
+  --sl-brand-deep: #2c5e2c;
+
+  /* ===== Neutraler (grått/svart) ===== */
+  --sl-sand-50:  #fafbfa;
+  --sl-sand-100: #f3f5f3;
+  --sl-sand-200: #e8ebe8;
+  --sl-stone-300: #d3d7d3;
+
+  --sl-ink-900: #181b19;
+  --sl-ink-700: #333734;
+  --sl-ink-500: #6b706c;
+  --sl-white: #ffffff;
+
+  /* ===== Semantiska färger ===== */
+  --sl-primary:        var(--sl-forest-700);
+  --sl-primary-dark:   var(--sl-forest-900);
+  --sl-accent:         var(--sl-green-500);
+  --sl-accent-strong:  var(--sl-forest-600);
+
+  /* Ljust tema: vitt/ljusgrått med grön accent och nära-svart text. */
+  --sl-bg:             #ffffff;
+  --sl-bg-alt:         #f3f5f3;
+  --sl-bg-dark:        var(--sl-forest-900);
+  --sl-surface:        #ffffff;
+
+  --sl-text:           #1b1f1c;
+  --sl-text-muted:     #5f6863;
+  --sl-text-on-dark:   #eef2ef;
+  --sl-text-on-dark-muted: #aeb8b1;
+
+  --sl-border:         #e4e7e4;
+  --sl-border-strong:  #d2d6d2;
+
+  --sl-success: #2f8f5b;
+  --sl-error:   #c0402b;
+
+  /* ===== Typografi ===== */
+  --sl-font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sl-font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+
+  --sl-fs-xs:   0.8125rem;  /* 13px */
+  --sl-fs-sm:   0.9375rem;  /* 15px */
+  --sl-fs-base: 1.0625rem;  /* 17px */
+  --sl-fs-lg:   1.1875rem;  /* 19px */
+  --sl-fs-xl:   1.375rem;   /* 22px */
+  --sl-fs-2xl:  1.75rem;    /* 28px */
+  --sl-fs-3xl:  2.25rem;    /* 36px */
+  --sl-fs-4xl:  2.9rem;     /* ~46px */
+  --sl-fs-5xl:  3.75rem;    /* 60px */
+
+  --sl-lh-tight: 1.12;
+  --sl-lh-snug:  1.3;
+  --sl-lh-normal: 1.65;
+
+  --sl-fw-regular: 400;
+  --sl-fw-medium: 500;
+  --sl-fw-semibold: 600;
+  --sl-fw-bold: 700;
+
+  /* ===== Spacing ===== */
+  --sl-space-1: 0.25rem;
+  --sl-space-2: 0.5rem;
+  --sl-space-3: 0.75rem;
+  --sl-space-4: 1rem;
+  --sl-space-5: 1.5rem;
+  --sl-space-6: 2rem;
+  --sl-space-7: 3rem;
+  --sl-space-8: 4rem;
+  --sl-space-9: 6rem;
+  --sl-space-10: 8rem;
+
+  /* ===== Layout ===== */
+  --sl-container: 1160px;
+  --sl-container-narrow: 760px;
+
+  /* ===== Radier (något stramare än Nordö – teknisk känsla) ===== */
+  --sl-radius-sm: 5px;
+  --sl-radius-md: 10px;
+  --sl-radius-lg: 16px;
+  --sl-radius-xl: 22px;
+  --sl-radius-full: 999px;
+
+  /* ===== Skuggor (neutralt grå) ===== */
+  --sl-shadow-sm: 0 1px 2px rgba(20, 25, 22, 0.06);
+  --sl-shadow-md: 0 6px 20px rgba(20, 25, 22, 0.08);
+  --sl-shadow-lg: 0 18px 48px rgba(20, 25, 22, 0.13);
+  --sl-shadow-green: 0 12px 30px rgba(56, 120, 56, 0.26);
+
+  /* ===== Övergångar ===== */
+  --sl-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --sl-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ===== Z-index ===== */
+  --sl-z-nav: 100;
+  --sl-z-overlay: 200;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sl-transition: 0ms;
+    --sl-transition-slow: 0ms;
+  }
+}

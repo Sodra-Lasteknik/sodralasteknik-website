@@ -1,0 +1,12 @@
+{
+  "name": "Södra Låsteknik",
+  "short_name": "Södra Lås",
+  "description": "Lås, säkerhetsdörrar, passersystem och låsprojektering för företag och fastigheter. Bas i Stockholm, uppdrag i hela Sverige.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#13251a",
+  "icons": [
+    { "src": "/assets/img/favicon.png", "sizes": "any", "type": "image/png" }
+  ]
+}

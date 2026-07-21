@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Lokala hemligheter (t.ex. SMTP-uppgifter om PHPMailer används)
+secrets.php
+.env
+
+# Kundunderlag / interna dokument (hör inte hemma i sajtens källkod)
+*.docx
+
+# Verktygsinställningar
+.claude/
