@@ -66,9 +66,13 @@ kunna innehålla **bifogade bilder/ritningar**.
   Mörk grön-svart för hero och paneler. Stramare radier än Nordö (teknisk känsla).
 - **Typsnitt:** Space Grotesk (rubriker) + Inter (brödtext), från Google Fonts.
 - **Ett tema** (inget `prefers-color-scheme`).
-- **Fotofri design i nuläget.** Kunden saknar egna bilder och vill inte ha stockfoton (de syns).
-  Hero och paneler använder mörka ytor + sköld-emblemet som vattenstämpel. Byts mot riktiga
-  bilder (servicebilar, team) när sådana finns.
+- **~~Fotofri design~~ → egna foton (2026-07-22).** Kunden har tagit fram egna bilder. `hero.png`
+  (de två profilerade servicebilarna framför lokalen) är nu mörk hero-bakgrund med läsbarhets-
+  overlay på ALLA sidor (`.hero-dark`, `.page-hero`, `.legal-hero`). `om-oss.png` (låskista + nycklar)
+  fyller om-oss-boxen och `varfor-oss.png` (hänglås med emblem) fyller varför-oss-boxen. Båda
+  boxarna har ett **kort citat överlagrat i nederkant** (mörk toning för läsbarhet, ingen grön box).
+  De gamla emblem-vattenstämplarna är pensionerade. Nya hero-foton bör vara relativt mörka, annars måste
+  overlay-opaciteten höjas för att texten ska vara läsbar.
 - **Hosting: One.com** (inte Loopia). Domänen ligger där. One.com använder **SFTP**.
 - **Offertformulär via PHP** med bildbilagor — samma mönster som Nordös serviceanmälan
   (`serviceanmalan.php`), som är verifierat och härdat. Web3Forms gratisplan stödjer inte
@@ -143,7 +147,8 @@ Ungefär i ordning:
 
 ## 7. Öppna frågor / väntar på kunden
 
-- **Bilder** på servicebilar, team och arbete (kunden sa att de kan tas fram). Tills dess: fotofri design.
+- **Bilder** — hero (servicebilar), om-oss (låskista) och varför-oss (hänglås) är nu på plats
+  (2026-07-22). Kvar: ev. fler bilder (team, arbete pågår) och en delningsbild (og-image).
 - **Team-presentation** — vill de presentera Thomas, Markus, Jesper med namn/bild? Underlag delvis
   i formuläret (avsnitt 2), men bekräfta vad som får publiceras.
 - **Google-omdömen/kundcitat** — inga angivna ännu; fråga om referenser som får citeras.
@@ -182,3 +187,10 @@ med skarpt mejltest av offertformuläret (§5, §6).
 in manifestet i sidhuvudena. Röktestade lokalt med `serve.py` – alla sidor (start, contact, privacy,
 404, robots, sitemap, manifest) svarar 200. Sajten är därmed innehållsmässigt klar lokalt.
 Nästa gång: deploy till One.com (SFTP-secrets + webbrot), skarpt mejltest av offert.php, ev. og-image.
+
+**2026-07-22.** Lade in kundens egna foton och pensionerade den fotofria designen. `hero.png`
+(servicebilarna) blev mörk hero-bakgrund med overlay på alla sidor (start, kontakt, policy, 404),
+`om-oss.png` fyller om-oss-boxen och `varfor-oss.png` varför-oss-boxen (citatet överlagrat på
+bilden, ingen grön box). Bumpade cache-busting `?v=1.0.0` → `?v=1.1.2` i alla HTML. Röktestat lokalt –
+alla sidor + bildresurser svarar 200. Uppdaterade CLAUDE.md och PROJEKT.md (fotobeslutet).
+Pushat repo ligger på GitHub (Sodra-Lasteknik/sodralasteknik-website) sedan igår.

@@ -47,11 +47,16 @@ and panels. Fonts: Space Grotesk (headings) + Inter (body) from Google Fonts. Si
 If you copy more CSS/HTML from the Nordö repo, run the same rename or it won't pick up the tokens.
 
 **Södra-specific CSS** lives in a clearly-marked section at the **end of `main.css`**
-("Södra Låsteknik – komponenter utöver den delade grunden"): the photo-free `.hero-dark` +
-`.hero-emblem` watermark, the 3-column `.services-grid-3`, the `.brand-grid` chips, and the
-`.why-panel` / `.about-panel` that replace Nordö's photo asides. **The site is intentionally
-photo-free** for now (customer has no own photos and dislikes stock) — dark surfaces + the shield
-emblem stand in until real photos of the service vans / team exist.
+("Södra Låsteknik – komponenter utöver den delade grunden"): the `.hero-dark` photo hero, the
+3-column `.services-grid-3`, the `.brand-grid` chips, and the `.why-panel` / `.about-panel`
+photo boxes. **The site now uses the customer's own photos** (added 2026-07-22): `hero.png` (the
+two branded service vans) is the dark hero background under a legibility overlay on every page
+(`.hero-dark`, `.page-hero`, `.legal-hero`); `om-oss.png` fills `.about-panel` and `varfor-oss.png`
+fills `.why-panel`. The old emblem watermarks (`.hero-emblem`, `.why-panel::before`) are retired —
+`.hero-emblem` is now `display:none`. Dark overlays keep white hero text readable, so new hero
+photos should stay reasonably dark or the overlay opacity needs raising. `.about-panel` and `.why-panel`
+share one rule: each is a full-bleed photo with a short quote (blockquote + cite) overlaid on the
+lower-left, made readable by a bottom-up dark gradient (`::after`) — no coloured box.
 
 **JavaScript** (plain IIFEs): `assets/js/main.js` (navbar scroll state, mobile menu, reveal
 animations, footer year, motion layer — all gated behind `prefers-reduced-motion`) loaded on every
