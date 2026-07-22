@@ -1179,7 +1179,7 @@ input[type="file"]::file-selector-button {
 }
 
 /* ===== Varumärken ===== */
-.brands { background: var(--sl-bg-alt); }
+.brands { background: var(--sl-bg); }
 .brand-grid {
   display: flex;
   flex-wrap: wrap;
