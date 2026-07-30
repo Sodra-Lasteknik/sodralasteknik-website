@@ -1,26 +1,27 @@
 name: Deploy till One.com
 
-# Södra Låsteknik driftas på One.com. FTP är avstängt av One.com – vi använder SFTP.
-# Denna workflow laddar upp sajten till One.coms publika webbrot vid varje push till main.
+# Södra Låsteknik driftas på One.com (ny "cloud"-plattform). FTP är avstängt – vi använder SFTP.
+# Laddar upp sajten till webbroten vid varje push till main.
 #
-# One.com: när du loggar in via SFTP landar du DIREKT i din publika webbrot
-# (httpd.www). Därför laddas filerna upp till nuvarande katalog "." – inte till
-# en undermapp "httpd.www/" (det skapar httpd.www/httpd.www och sajten hamnar fel).
-# Absoluta roten "/" är skrivskyddad och får inte användas.
-#
-# Webbroten innehåller en gammal Website Builder-sajt. mirror --delete ersätter hela
-# webbroten med VÅR sajt (byggarens filer tas bort). Säkert: e-post, backups och
-# httpd.private ligger utanför webbroten och nås inte härifrån. Den gamla sajten kan
-# återskapas genom att publicera om i Website Builder. ms*.txt (domänverifiering) och
-# .well-known undantas för säkerhets skull.
+# VIKTIGT om katalogstrukturen på det här kontot (bekräftat via diagnostik):
+#   SFTP-användaren landar i sin hemkatalog:
+#     /customers/f/0/f/clvdci9yf/users/<user>
+#   Det är INTE webbroten. Den riktiga webbroten ligger i:
+#     /customers/f/0/f/clvdci9yf/webroots/www
+#   dvs. "../../webroots/www/" räknat från hemkatalogen. Mappen ägs av SFTP-användaren
+#   (skrivbar). Absoluta "/" är skrivskyddad. httpd.www finns inte på den här plattformen.
 #
 # Kräver repo-secrets (Settings → Secrets and variables → Actions):
-#   SFTP_SERVER    – One.coms SFTP-värd, t.ex. ssh.xxxxxxxx.service.one
-#   SFTP_USERNAME  – SFTP-användarnamnet, t.ex. xxxxxxxx_ssh
-#   SFTP_PASSWORD  – SFTP-lösenordet (skapas i One.coms panel → Hostinginställningar → SSH & SFTP)
+#   SFTP_SERVER    – t.ex. ssh.xxxxxxxx.service.one
+#   SFTP_USERNAME  – t.ex. xxxxxxxx_ssh
+#   SFTP_PASSWORD  – SFTP-lösenordet (One.com → Hostinginställningar → SSH & SFTP)
 #
 # Interna filer (dokumentation, dev-server) publiceras inte – de rensas bort i
-# "Förbered publiceringsmapp" innan uppladdning. Ändra listan där vid behov.
+# "Förbered publiceringsmapp" innan uppladdning.
+#
+# OBS: --delete är avstängt tills vi bekräftat att sajten går live på rätt plats.
+# När det är verifierat kan --delete slås på för att rensa bort den gamla
+# Website Builder-sajtens kvarvarande filer (undanta då ms*.txt och .well-known).
 
 on:
   push:
@@ -50,20 +51,18 @@ jobs:
             --exclude='.editorconfig' \
             ./ dist/
 
-      - name: Ladda upp till One.com (httpd.www) via SFTP
+      - name: Ladda upp till One.com (webroots/www) via SFTP
         env:
           LFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
           SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          echo "=== utforska webroots-katalogen ==="
           lftp -u "$SFTP_USERNAME" --env-password sftp://"$SFTP_SERVER" <<'EOF'
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
-          cd ../../webroots
-          pwd
-          ls
+          mirror -R --verbose --no-perms ./dist/ ../../webroots/www/
+          ls ../../webroots/www
           bye
           EOF
