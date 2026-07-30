@@ -57,16 +57,13 @@ jobs:
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
-          echo "=== utforska tva nivaer upp + ladda upp till httpd.www ==="
+          echo "=== utforska webroots-katalogen ==="
           lftp -u "$SFTP_USERNAME" --env-password sftp://"$SFTP_SERVER" <<'EOF'
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
-          pwd
-          cd ../..
+          cd ../../webroots
           pwd
           ls
-          mirror -R --verbose --no-perms ./dist/ httpd.www/
-          ls httpd.www
           bye
           EOF
