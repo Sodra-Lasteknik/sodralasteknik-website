@@ -57,10 +57,15 @@ jobs:
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          echo "=== pwd + ls FORE, mirror, ls EFTER ==="
           lftp -u "$SFTP_USERNAME" --env-password sftp://"$SFTP_SERVER" <<'EOF'
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
-          mirror -R --verbose --no-perms --delete --exclude-glob 'ms*.txt' --exclude '\.well-known/' ./dist/ ./
+          pwd
+          ls
+          mirror -R --verbose --no-perms ./dist/ ./
+          pwd
+          ls
           bye
           EOF
