@@ -1,20 +1,19 @@
 name: Deploy till One.com
 
-# Södra Låsteknik driftas på One.com (inte Loopia). One.com använder SFTP,
-# inte FTPS. Denna workflow laddar upp sajten via SFTP vid varje push till main.
+# Södra Låsteknik driftas på One.com. FTP är avstängt av One.com – vi använder SFTP.
+# Denna workflow laddar upp sajten till One.coms publika webbrot vid varje push till main.
 #
-# INNAN DEN FUNGERAR – gör detta en gång:
-#   1. Skapa ett SFTP-lösenord i One.coms kontrollpanel (Filhantering → SFTP/SSH).
-#   2. Lägg in repo-secrets (Settings → Secrets and variables → Actions):
-#        SFTP_SERVER    – One.coms SFTP-värd, t.ex. ssh.one.com
-#        SFTP_USERNAME  – ditt One.com-användarnamn (ofta domänen)
-#        SFTP_PASSWORD  – SFTP-lösenordet från steg 1
-#   3. Bekräfta remote_path nedan mot One.coms webbrot för domänen.
-#      På One.com ligger den publika webbroten oftast i mappen som visas
-#      när du loggar in via SFTP (t.ex. "/" eller "/www"). Kontrollera i panelen.
+# One.coms publika webbrot heter "httpd.www" (du landar i hemkatalogen som innehåller
+# httpd.www, httpd.private och backups). Webbfilerna MÅSTE ligga i httpd.www – därför
+# remote_path: '/httpd.www'. Att ladda upp till '/' nekas av servern.
 #
-# Alternativ tills detta är satt: ladda upp filerna manuellt via en SFTP-klient
-# (t.ex. FileZilla mot ssh.one.com) – allt utom filerna i "exclude" nedan.
+# Kräver repo-secrets (Settings → Secrets and variables → Actions):
+#   SFTP_SERVER    – One.coms SFTP-värd, t.ex. ssh.xxxxxxxx.service.one
+#   SFTP_USERNAME  – SFTP-användarnamnet, t.ex. xxxxxxxx_ssh
+#   SFTP_PASSWORD  – SFTP-lösenordet (skapas i One.coms panel → Hostinginställningar → SSH & SFTP)
+#
+# Interna filer (dokumentation, dev-server) publiceras inte – de rensas bort i
+# "Förbered publiceringsmapp" innan uppladdning. Ändra listan där vid behov.
 
 on:
   push:
@@ -28,24 +27,28 @@ jobs:
       - name: Checka ut koden
         uses: actions/checkout@v4
 
-      - name: Ladda upp via SFTP
+      - name: Förbered publiceringsmapp (exkludera interna filer)
+        run: |
+          mkdir -p dist
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='dist' \
+            --exclude='*.docx' \
+            --exclude='PROJEKT.md' \
+            --exclude='README.md' \
+            --exclude='CLAUDE.md' \
+            --exclude='serve.py' \
+            --exclude='.gitignore' \
+            --exclude='.editorconfig' \
+            ./ dist/
+
+      - name: Ladda upp till One.com (httpd.www) via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.6
         with:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: 22
-          local_path: './*'
-          # TODO: bekräfta One.coms webbrot för sodralasteknik.se
-          remote_path: '/'
-          exclude: |
-            **/.git*
-            **/.github/**
-            venv/**
-            __pycache__/**
-            PROJEKT.md
-            README.md
-            CLAUDE.md
-            serve.py
-            .editorconfig
-            .gitignore
+          local_path: './dist/*'
+          remote_path: '/httpd.www'
