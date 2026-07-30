@@ -19,9 +19,10 @@ name: Deploy till One.com
 # Interna filer (dokumentation, dev-server) publiceras inte – de rensas bort i
 # "Förbered publiceringsmapp" innan uppladdning.
 #
-# OBS: --delete är avstängt tills vi bekräftat att sajten går live på rätt plats.
-# När det är verifierat kan --delete slås på för att rensa bort den gamla
-# Website Builder-sajtens kvarvarande filer (undanta då ms*.txt och .well-known).
+# --delete håller webbroten = exakt vår sajt och rensar bort den gamla Website
+# Builder-sajtens filer vid varje deploy. Undantag (rörs ej): .htaccess (HTTPS-
+# omdirigering), ms*.txt (domänverifiering), .well-known (SSL/verifiering) och
+# tmp-onehopmigration* (One.coms egna migreringsmappar).
 
 on:
   push:
@@ -62,7 +63,7 @@ jobs:
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
-          mirror -R --verbose --no-perms ./dist/ ../../webroots/www/
+          mirror -R --verbose --no-perms --delete --exclude-glob 'ms*.txt' --exclude '\.htaccess' --exclude '\.well-known' --exclude 'tmp-onehopmigration' ./dist/ ../../webroots/www/
           ls ../../webroots/www
           bye
           EOF
