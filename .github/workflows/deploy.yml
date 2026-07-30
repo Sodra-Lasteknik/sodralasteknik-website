@@ -3,9 +3,16 @@ name: Deploy till One.com
 # Södra Låsteknik driftas på One.com. FTP är avstängt av One.com – vi använder SFTP.
 # Denna workflow laddar upp sajten till One.coms publika webbrot vid varje push till main.
 #
-# One.com: när du loggar in via SFTP landar du i din hemkatalog, som innehåller
-# httpd.www (publik webbrot), httpd.private och backups. Absoluta roten "/" är
-# skrivskyddad – därför används en RELATIV sökväg: httpd.www (utan inledande /).
+# One.com: när du loggar in via SFTP landar du DIREKT i din publika webbrot
+# (httpd.www). Därför laddas filerna upp till nuvarande katalog "." – inte till
+# en undermapp "httpd.www/" (det skapar httpd.www/httpd.www och sajten hamnar fel).
+# Absoluta roten "/" är skrivskyddad och får inte användas.
+#
+# Webbroten innehåller en gammal Website Builder-sajt. mirror --delete ersätter hela
+# webbroten med VÅR sajt (byggarens filer tas bort). Säkert: e-post, backups och
+# httpd.private ligger utanför webbroten och nås inte härifrån. Den gamla sajten kan
+# återskapas genom att publicera om i Website Builder. ms*.txt (domänverifiering) och
+# .well-known undantas för säkerhets skull.
 #
 # Kräver repo-secrets (Settings → Secrets and variables → Actions):
 #   SFTP_SERVER    – One.coms SFTP-värd, t.ex. ssh.xxxxxxxx.service.one
@@ -54,6 +61,6 @@ jobs:
           set sftp:auto-confirm yes
           set net:max-retries 2
           set net:timeout 20
-          mirror -R --verbose --no-perms ./dist/ httpd.www/
+          mirror -R --verbose --no-perms --delete --exclude-glob 'ms*.txt' --exclude '\.well-known/' ./dist/ ./
           bye
           EOF
