@@ -90,7 +90,15 @@ CTA and footers.
 
 ## Deploy
 
-Hosted on **One.com** via SFTP. `.github/workflows/deploy.yml` uploads on push to `main`, but needs
-repo secrets `SFTP_SERVER` / `SFTP_USERNAME` / `SFTP_PASSWORD` and the correct `remote_path`
-(One.com web root) — see the comments in that file and `PROJEKT.md` §6. Until that's set, upload
-manually via an SFTP client (FileZilla → ssh.one.com). One.com supports PHP.
+**Live at https://sodralasteknik.se.** Hosted on **One.com** via SFTP; `.github/workflows/deploy.yml`
+auto-deploys on every push to `main` (lftp mirror). Repo secrets `SFTP_SERVER` / `SFTP_USERNAME` /
+`SFTP_PASSWORD` are set.
+
+**Critical, non-obvious:** this account is on One.com's newer "cloud" platform. The SFTP user lands in
+a **home directory that is NOT the web root**. The real web root is **`../../webroots/www/`** (i.e.
+`/customers/f/0/f/clvdci9yf/webroots/www`) — there is no `httpd.www`, and absolute `/` is read-only.
+The deploy targets that path with `--delete` (excluding `.htaccess`, `ms*.txt`, `.well-known`,
+`tmp-onehopmigration*`). A push therefore rewrites the web root to match the repo. The old site lived
+in One.com's Website Builder (still "published" in its dashboard but overwritten by our files — don't
+click re-publish there). PHP `mail()` works: the offert form delivers to info@sodralasteknik.se
+(verified 2026-07-30). Full details in `PROJEKT.md` §6.

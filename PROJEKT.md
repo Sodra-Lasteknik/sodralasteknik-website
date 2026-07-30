@@ -4,11 +4,12 @@ Arbetsdokument. Vad vi vet, vad vi beslutat, vad som är gjort och vad som åter
 Öppna det här repot (`C:\git\sodralasteknik-website`) för att fortsätta bygga — allt
 som behövs finns här, inget beror på Nordö-projektet.
 
-**Status 2026-07-21: FÄRDIG LOKALT.** Alla sidor byggda: startsida, kontakt-/offertsida med
-PHP-formulär, integritetspolicy, 404, samt robots/sitemap/manifest. Alla svarar 200 lokalt.
-Kvar innan lansering: **deploy till One.com** (SFTP-secrets + webbrot) och **skarpt mejltest av
-offertformuläret** (PHP saknas lokalt, mejlleveransen måste verifieras på One.com – se §6).
-Ev. og-image. Ingenting är publicerat än.
+**Status 2026-07-30: LIVE.** Sajten är publicerad på https://sodralasteknik.se via automatisk
+SFTP-deploy från GitHub (push till `main`). Offertformuläret är **skarpt testat** — förfrågningar
+(med bilagor) landar i info@sodralasteknik.se via PHP:s `mail()`. HTTPS är på. Den gamla Website
+Builder-sajten är utbytt och dess filer rensade. Kvar (ej brådskande): ev. og-image, öppettider
+08–17, teamnamn och kundcitat (väntar på kunden, §7). Deploy-strukturen på One.com var klurig –
+se §6.
 
 ---
 
@@ -128,18 +129,32 @@ Ungefär i ordning:
       finns redan i sidhuvudena men pekar inte på någon bild ännu (`og:image` saknas).
 - [ ] **Nav/footer på alla sidor** — hålls i synk manuellt (duplicerad markup, som Nordö). Nu
       dubblerad på 3 sidor (start, contact, privacy) — ändringar måste in på alla.
-- [ ] **Deploy till One.com** — sätt SFTP-secrets, bekräfta webbrot, testa. Verifiera SSL/HTTPS.
-- [ ] **Skarpt mejltest av offertformuläret på One.com** — se §6. Kräver PHP-host (inte serve.py).
-- [ ] **Cache-busting** — alla CSS/JS refereras med `?v=1.0.0`. Bumpa i alla HTML vid ändring.
+- [x] **Deploy till One.com** — klar. Auto-deploy via GitHub Actions/SFTP (se §6 för sökvägen).
+      HTTPS verifierat på.
+- [x] **Skarpt mejltest av offertformuläret på One.com** — klart. Mejl + bilagor landar i
+      info@sodralasteknik.se. `mail()` räckte, ingen SMTP-reserv behövdes.
+- [ ] **Cache-busting** — alla CSS/JS refereras med `?v=1.1.x`. Bumpa i alla HTML vid ändring.
 
 ## 6. One.com-specifika noteringar (viktigt)
 
-- **Deploy sker via SFTP**, inte FTPS. `deploy.yml` är omskriven för det men behöver secrets
-  (`SFTP_SERVER`, `SFTP_USERNAME`, `SFTP_PASSWORD`) och rätt `remote_path` (One.coms webbrot).
-- **PHP finns på One.com**, men mejl via PHP:s `mail()` kan bete sig annorlunda än på Loopia.
-  På Loopia krävdes två fixar för Nordös formulär: (1) envelope-avsändare via `-f`, (2) hela
-  meddelandet 7-bitars rent (MIME-kodade headers + base64-brödtext) för att undvika SMTPUTF8-studs.
-  Bär över samma härdade PHP och **testa mejlleveransen skarpt** — landar den inte, är
+- **Deploy sker via SFTP** (FTP är avstängt av One.com). `deploy.yml` kör lftp vid push till
+  `main`. Secrets finns satta: `SFTP_SERVER` = `ssh.clvdci9yf.service.one`, `SFTP_USERNAME`
+  = `clvdci9yf_ssh`, `SFTP_PASSWORD` (skapas i panelen → Hostinginställningar → SSH & SFTP;
+  mejlas till kontots adm-adress = thomas@sodralasteknik.se, som ligger i Microsoft 365).
+- **Webbroten är INTE `httpd.www`.** Det här är One.coms nya "cloud/migrerade" plattform
+  (`tmp-onehopmigration`-mappar syns). SFTP-användaren **landar i sin hemkatalog**
+  `/customers/f/0/f/clvdci9yf/users/<user>` — som INTE är webbroten. Den riktiga webbroten är
+  `/customers/f/0/f/clvdci9yf/webroots/www`, dvs. **`../../webroots/www/`** räknat från
+  hemkatalogen. Mappen ägs av SFTP-användaren (skrivbar). `deploy.yml` mirror:ar dit med
+  `--delete` (undantar `.htaccess`, `ms*.txt`, `.well-known`, `tmp-onehopmigration*`).
+  Absoluta `/` är skrivskyddad.
+- **Sajten låg tidigare i One.coms Website Builder** (publicerad, ingen enkel "avpublicera").
+  Vi bytte helt enkelt ut filerna i webbroten mot vår statiska sajt; byggarens filer städades
+  bort av `--delete`. Byggaren står kvar "publicerad" i sin dashboard men servar inget så länge
+  ingen klickar publicera igen (då skulle den skriva över `index.html` – kör i så fall om deployen).
+- **PHP + mejl fungerar.** `mail()` levererar offertförfrågningar (med bilagor) till
+  info@sodralasteknik.se – **skarpt testat 2026-07-30**. De härdade fixarna från Nordö (envelope
+  `-f`, 7-bitars MIME) räckte; ingen SMTP-reserv behövdes. Skulle leveransen sluta fungera är
   reservlösningen autentiserad SMTP via PHPMailer mot One.coms SMTP-server.
 - **Självuppdatering:** kunden vill gärna kunna lägga till bilder / uppdatera info själva "om det
   inte är för krångligt". Sajten är handredigerad HTML (inget CMS). Öppen fråga hur man löser det —
@@ -194,3 +209,15 @@ Nästa gång: deploy till One.com (SFTP-secrets + webbrot), skarpt mejltest av o
 bilden, ingen grön box). Bumpade cache-busting `?v=1.0.0` → `?v=1.1.2` i alla HTML. Röktestat lokalt –
 alla sidor + bildresurser svarar 200. Uppdaterade CLAUDE.md och PROJEKT.md (fotobeslutet).
 Pushat repo ligger på GitHub (Sodra-Lasteknik/sodralasteknik-website) sedan igår.
+
+**2026-07-30. SAJTEN LIVE.** Diverse finputs (klickbara varumärkeslänkar, kort citat på om-oss-
+bilden, borttaget telefonnr i navbar, Varumärken-bakgrund, tog bort "sedan gymnasiet"). Sedan
+deploy till One.com – som blev en riktig utredning. SFTP-inloggningen fungerade direkt, men
+filerna "försvann": kontot ligger på One.coms **nya cloud-plattform** där SFTP-användaren landar
+i en hemkatalog (`.../users/<user>`), inte i webbroten. Efter diagnostik (pwd/ls i deploy-loggen)
+hittades webbroten på **`../../webroots/www`**. Bytte deploy-actionen till **lftp** (wlixcc-actionen
+tvingade absolut sökväg och stötte på skrivskyddad rot). Den gamla sajten låg i One.coms Website
+Builder (ingen enkel avpublicering) – vi bytte helt enkelt ut filerna i webbroten och rensade
+byggarens filer med `--delete`. Slutresultat: sajten live på https://sodralasteknik.se, HTTPS på,
+och offertformuläret **skarpt verifierat** – mejl landar i info@sodralasteknik.se. Se §6 för
+den fullständiga One.com-strukturen (viktigt inför framtida deploys/felsökning).
