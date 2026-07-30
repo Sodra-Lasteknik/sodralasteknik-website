@@ -3,9 +3,9 @@ name: Deploy till One.com
 # Södra Låsteknik driftas på One.com. FTP är avstängt av One.com – vi använder SFTP.
 # Denna workflow laddar upp sajten till One.coms publika webbrot vid varje push till main.
 #
-# One.coms publika webbrot heter "httpd.www" (du landar i hemkatalogen som innehåller
-# httpd.www, httpd.private och backups). Webbfilerna MÅSTE ligga i httpd.www – därför
-# remote_path: '/httpd.www'. Att ladda upp till '/' nekas av servern.
+# One.com: när du loggar in via SFTP landar du i din hemkatalog, som innehåller
+# httpd.www (publik webbrot), httpd.private och backups. Absoluta roten "/" är
+# skrivskyddad – därför används en RELATIV sökväg: httpd.www (utan inledande /).
 #
 # Kräver repo-secrets (Settings → Secrets and variables → Actions):
 #   SFTP_SERVER    – One.coms SFTP-värd, t.ex. ssh.xxxxxxxx.service.one
@@ -44,11 +44,16 @@ jobs:
             ./ dist/
 
       - name: Ladda upp till One.com (httpd.www) via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.6
-        with:
-          server: ${{ secrets.SFTP_SERVER }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          port: 22
-          local_path: './dist/*'
-          remote_path: '/httpd.www'
+        env:
+          LFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_SERVER: ${{ secrets.SFTP_SERVER }}
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          lftp -u "$SFTP_USERNAME" --env-password sftp://"$SFTP_SERVER" <<'EOF'
+          set sftp:auto-confirm yes
+          set net:max-retries 2
+          set net:timeout 20
+          mirror -R --verbose --no-perms ./dist/ httpd.www/
+          bye
+          EOF
