@@ -111,16 +111,37 @@ p { color: var(--sl-text-muted); }
   position: fixed;
   inset: 0 0 auto 0;
   z-index: var(--sl-z-nav);
-  transition: background var(--sl-transition), box-shadow var(--sl-transition), padding var(--sl-transition);
+  transition: background var(--sl-transition), box-shadow var(--sl-transition), border-color var(--sl-transition), padding var(--sl-transition);
   padding-block: var(--sl-space-1);
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid transparent;
 }
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
   box-shadow: var(--sl-shadow-sm);
-  border-bottom: 1px solid var(--sl-border);
+  border-bottom-color: var(--sl-border);
+}
+
+/* Desktop: navbaren är transparent över den mörka heron högst upp. När man
+   börjar scrolla läggs .scrolled på (scrollY > 40 i main.js) och bakgrunden +
+   avskiljaren tonar in. Logga/länkar/knappar ligger kvar hela tiden.
+   Endast desktop – på mobil (≤900px) hålls navbaren solid (blur bryter menyn). */
+@media (min-width: 901px) {
+  .navbar:not(.scrolled) {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+  .navbar:not(.scrolled) .nav-links a:not(.btn) {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+  .navbar:not(.scrolled) .brand-logo {
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45));
+  }
 }
 .navbar-inner {
   display: flex;
@@ -1033,12 +1054,23 @@ input[type="file"]::file-selector-button {
   .footer-grid { grid-template-columns: 1fr 1fr; }
 
   .nav-toggle { display: flex; position: relative; z-index: 2; }
-  /* Solid navbar utan blur på mobil – blur bryter fixed-positionering av menyn */
+  /* Ingen blur på mobil – blur bryter fixed-positioneringen av menyn.
+     Navbaren är transparent högst upp (över heron) och solid vid scroll. */
   .navbar, .navbar.scrolled {
     background: var(--sl-bg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
+  .navbar:not(.scrolled) {
+    background: transparent;
+    box-shadow: none;
+  }
+  .navbar:not(.scrolled) .nav-toggle span { background: #fff; }
+  .navbar:not(.scrolled) .brand-logo { filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.45)); }
+  /* Menyn öppen: den vita panelen täcker heron, så logga + hamburgare/X måste
+     vara mörka även högst upp (annars vitt-på-vitt). */
+  .nav-open .navbar:not(.scrolled) .nav-toggle span { background: var(--sl-text); }
+  .nav-open .navbar:not(.scrolled) .brand-logo { filter: none; }
   .brand { position: relative; z-index: 2; }
   /* Mindre logga på mobil: gör navbaren lägre än sektionernas topp-padding
      så ankarlänkar (t.ex. #process) landar med rubriken synlig under navbaren. */
