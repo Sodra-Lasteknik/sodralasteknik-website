@@ -18,6 +18,7 @@ secrets.php
 
 # Kundunderlag / interna dokument (hör inte hemma i sajtens källkod)
 *.docx
+*.pdf
 
 # Verktygsinställningar
 .claude/

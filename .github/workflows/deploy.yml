@@ -44,6 +44,7 @@ jobs:
             --exclude='.github' \
             --exclude='dist' \
             --exclude='*.docx' \
+            --exclude='*.pdf' \
             --exclude='PROJEKT.md' \
             --exclude='README.md' \
             --exclude='CLAUDE.md' \
